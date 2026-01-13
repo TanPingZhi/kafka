@@ -1,0 +1,90 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: kafka-transactional
+
+  kafka:
+    bootstrap-servers: kafka:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      transaction-id-prefix: tx-
+      acks: all
+      properties:
+        enable.idempotence: true
+    consumer:
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+      auto-offset-reset: earliest
+      isolation-level: read_committed
+
+  cloud:
+    function:
+      definition: stagingAToPublicA;stagingBToPublicB
+    stream:
+      kafka:
+        binder:
+          brokers: kafka:9092
+          auto-create-topics: true
+          transaction:
+            transaction-id-prefix: stream-tx-
+            producer:
+              configuration:
+                acks: all
+                enable.idempotence: true
+        bindings:
+          stagingAToPublicA-in-0:
+            consumer:
+              configuration:
+                isolation.level: read_committed
+                value.deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+          stagingBToPublicB-in-0:
+            consumer:
+              configuration:
+                isolation.level: read_committed
+                value.deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+          stagingAToPublicA-out-0:
+            producer:
+              configuration:
+                value.serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+          stagingBToPublicB-out-0:
+            producer:
+              configuration:
+                value.serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+      bindings:
+        # Staging A consumer -> Public A producer
+        stagingAToPublicA-in-0:
+          destination: stagingA
+          group: staging-to-public-a
+          consumer:
+            use-native-decoding: true
+        stagingAToPublicA-out-0:
+          destination: publicA
+          producer:
+            use-native-encoding: true
+        # Staging B consumer -> Public B producer
+        stagingBToPublicB-in-0:
+          destination: stagingB
+          group: staging-to-public-b
+          consumer:
+            use-native-decoding: true
+        stagingBToPublicB-out-0:
+          destination: publicB
+          producer:
+            use-native-encoding: true
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+
+logging:
+  level:
+    org.springframework.kafka: DEBUG
+    org.apache.kafka: INFO
+    org.springframework.cloud.stream: DEBUG
+    com.example.kafka: DEBUG
