@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-service-stateful
+  labels:
+    app: kafka-app-stateful
+spec:
+  type: ClusterIP
+  selector:
+    app: kafka-app-stateful
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  sessionAffinity: None
+  # This is the key service for load balancing across StatefulSet pods
+  # It will distribute traffic randomly across all 3 pods

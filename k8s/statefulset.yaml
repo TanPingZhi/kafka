@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka-app-statefulset
+  labels:
+    app: kafka-app-stateful
+spec:
+  serviceName: kafka-service-stateful
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kafka-app-stateful
+  template:
+    metadata:
+      labels:
+        app: kafka-app-stateful
+    spec:
+      initContainers:
+      - name: init-pod-number
+        image: busybox:1.35
+        command: ['sh', '-c']
+        args:
+        - |
+          # Extract pod ordinal from hostname (e.g., kafka-app-statefulset-0 -> 0)
+          POD_ORDINAL=$(echo $HOSTNAME | grep -o '[0-9]*$')
+          echo $POD_ORDINAL > /pod-info/pod-number
+        volumeMounts:
+        - name: pod-info
+          mountPath: /pod-info
+      containers:
+      - name: kafka-app
+        image: kafka-app:v2
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: POD_NUMBER
+          value: "$(cat /pod-info/pod-number)"
+        workingDir: /app
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          export POD_NUMBER=$(cat /pod-info/pod-number)
+          java -jar app.jar
+        volumeMounts:
+        - name: pod-info
+          mountPath: /pod-info
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+      volumes:
+      - name: pod-info
+        emptyDir: {}
