@@ -20,14 +20,14 @@ public class StagingToPublicConsumer {
     }
 
     @Transactional
-    @KafkaListener(topics = "stagingA", groupId = "staging-to-public-a")
+    @KafkaListener(topics = "stagingA", groupId = "staging-to-public-group")
     public void consumeStagingA(MessagePayload payload) {
         log.info("Transferring message from stagingA to publicA: {}", payload.getContent());
         kafkaTemplate.send("publicA", payload);
     }
 
     @Transactional
-    @KafkaListener(topics = "stagingB", groupId = "staging-to-public-b")
+    @KafkaListener(topics = "stagingB", groupId = "staging-to-public-group")
     public void consumeStagingB(MessagePayload payload) {
         log.info("Transferring message from stagingB to publicB: {}", payload.getContent());
         kafkaTemplate.send("publicB", payload);
