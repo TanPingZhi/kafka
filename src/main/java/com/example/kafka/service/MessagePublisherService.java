@@ -42,18 +42,16 @@ public class MessagePublisherService {
                 throw new RuntimeException("Encountered 'FAIL' message - transaction rolled back");
             }
             
-            String messageKey = UUID.randomUUID().toString();
-            
             // Create a message wrapper for JSON serialization
             MessagePayload payload = new MessagePayload(message);
             
             // Publish to stagingA
             log.debug("Publishing message to {}: {}", STAGING_A_TOPIC, message);
-            kafkaTemplate.send(STAGING_A_TOPIC, messageKey, payload);
+            kafkaTemplate.send(STAGING_A_TOPIC, payload);
             
             // Publish to stagingB
             log.debug("Publishing message to {}: {}", STAGING_B_TOPIC, message);
-            kafkaTemplate.send(STAGING_B_TOPIC, messageKey, payload);
+            kafkaTemplate.send(STAGING_B_TOPIC, payload);
         }
         
         log.info("Successfully queued {} messages to both staging queues", messages.size());
