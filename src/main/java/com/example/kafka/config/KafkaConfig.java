@@ -20,7 +20,7 @@ public class KafkaConfig {
     @Bean
     @Primary
     public ProducerFactory<String, Object> producerFactory(KafkaProperties properties) {
-        Map<String, Object> configs = properties.buildProducerProperties(null);
+        Map<String, Object> configs = properties.buildProducerProperties();
         
         // Use JsonSerializer directly for the main producer
         DefaultKafkaProducerFactory<String, Object> factory = new DefaultKafkaProducerFactory<>(
