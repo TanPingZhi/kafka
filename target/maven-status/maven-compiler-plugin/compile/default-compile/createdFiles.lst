@@ -1,2 +1,7 @@
-com/example/kafka/dto/MessageRequest.class
 com/example/kafka/KafkaTransactionalApplication.class
+com/example/kafka/service/StagingToPublicConsumer.class
+com/example/kafka/controller/MessageController.class
+com/example/kafka/dto/MessageRequest.class
+com/example/kafka/config/KafkaConfig.class
+com/example/kafka/service/MessagePublisherService.class
+com/example/kafka/service/MessagePublisherService$MessagePayload.class
