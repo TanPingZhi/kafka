@@ -2,6 +2,8 @@
 
 This project demonstrates a robust, transactional "Staging -> Public" queue pattern using Spring Kafka.
 
+See [TROUBLESHOOTING.md](file:///c:/Users/josia/Desktop/kafka/TROUBLESHOOTING.md) for notes on bug fixes and preventing connectivity issues.
+
 ## Project Premise: Why Staging?
 You might wonder: *"Why not publish directly to the Public topic?"*
 

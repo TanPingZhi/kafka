@@ -29,7 +29,7 @@ spec:
           mountPath: /pod-info
       containers:
       - name: kafka-app
-        image: kafka-app:v2
+        image: kafka-app:v3
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
@@ -37,6 +37,8 @@ spec:
         env:
         - name: POD_NUMBER
           value: "$(cat /pod-info/pod-number)"
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          value: "localhost:9092"
         workingDir: /app
         command: ["/bin/sh", "-c"]
         args:

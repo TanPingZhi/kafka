@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: kafka-app
-        image: kafka-app:v2
+        image: kafka-app:v3
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
@@ -26,6 +26,8 @@ spec:
         env:
         - name: POD_NUMBER
           value: "67"
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          value: "localhost:9092"
         resources:
           requests:
             memory: "512Mi"
